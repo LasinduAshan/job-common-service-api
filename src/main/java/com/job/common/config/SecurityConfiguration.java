@@ -25,51 +25,51 @@ import static org.springframework.http.HttpMethod.*;
 @EnableMethodSecurity
 public class SecurityConfiguration {
 
-  private final JwtAuthenticationFilter jwtAuthFilter;
-  private final AuthenticationProvider authenticationProvider;
-  private final LogoutHandler logoutHandler;
+    private final JwtAuthenticationFilter jwtAuthFilter;
+    private final AuthenticationProvider authenticationProvider;
+    private final LogoutHandler logoutHandler;
 
-  @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.csrf()
-            .disable().authorizeHttpRequests()
-            .requestMatchers(
-                    "/api/v1/auth/**"
-            )
-            .permitAll()
-
-
-            .requestMatchers("/api/v1/consultant-service/**").hasAnyRole(ADMIN.name(), CONSULTANT.name())
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf()
+                .disable().authorizeHttpRequests()
+                .requestMatchers(
+                        "/api/v1/auth/**"
+                )
+                .permitAll()
 
 
-            .requestMatchers(GET, "/api/v1/consultant-service/**").hasAnyAuthority(ADMIN_READ.name(), CONSULTANT_READ.name())
-            .requestMatchers(POST, "/api/v1/consultant-service/**").hasAnyAuthority(ADMIN_CREATE.name(), CONSULTANT_CREATE.name())
-            .requestMatchers(PUT, "/api/v1/consultant-service/**").hasAnyAuthority(ADMIN_UPDATE.name(), CONSULTANT_UPDATE.name())
-            .requestMatchers(DELETE, "/api/v1/consultant-service/**").hasAnyAuthority(ADMIN_DELETE.name(), CONSULTANT_DELETE.name())
+                .requestMatchers("/api/v1/consultant-service/**").hasAnyRole(ADMIN.name(), CONSULTANT.name())
 
 
-            /* .requestMatchers("/api/v1/admin-service/**").hasRole(ADMIN.name())
-
-             .requestMatchers(GET, "/api/v1/admin-service/**").hasAuthority(ADMIN_READ.name())
-             .requestMatchers(POST, "/api/v1/admin-service/**").hasAuthority(ADMIN_CREATE.name())
-             .requestMatchers(PUT, "/api/v1/admin-service/**").hasAuthority(ADMIN_UPDATE.name())
-             .requestMatchers(DELETE, "/api/v1/admin-service/**").hasAuthority(ADMIN_DELETE.name())*/
+                .requestMatchers(GET, "/api/v1/consultant-service/**").hasAnyAuthority(ADMIN_READ.name(), CONSULTANT_READ.name())
+                .requestMatchers(POST, "/api/v1/consultant-service/**").hasAnyAuthority(ADMIN_CREATE.name(), CONSULTANT_CREATE.name())
+                .requestMatchers(PUT, "/api/v1/consultant-service/**").hasAnyAuthority(ADMIN_UPDATE.name(), CONSULTANT_UPDATE.name())
+                .requestMatchers(DELETE, "/api/v1/consultant-service/**").hasAnyAuthority(ADMIN_DELETE.name(), CONSULTANT_DELETE.name())
 
 
-            .anyRequest()
-            .authenticated()
-            .and()
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .authenticationProvider(authenticationProvider)
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-            .logout()
-            .logoutUrl("/api/v1/auth/logout")
-            .addLogoutHandler(logoutHandler)
-            .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-    ;
+                /* .requestMatchers("/api/v1/admin-service/**").hasRole(ADMIN.name())
 
-    return http.build();
-  }
+                 .requestMatchers(GET, "/api/v1/admin-service/**").hasAuthority(ADMIN_READ.name())
+                 .requestMatchers(POST, "/api/v1/admin-service/**").hasAuthority(ADMIN_CREATE.name())
+                 .requestMatchers(PUT, "/api/v1/admin-service/**").hasAuthority(ADMIN_UPDATE.name())
+                 .requestMatchers(DELETE, "/api/v1/admin-service/**").hasAuthority(ADMIN_DELETE.name())*/
+
+
+                .anyRequest()
+                .authenticated()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout()
+                .logoutUrl("/api/v1/auth/logout")
+                .addLogoutHandler(logoutHandler)
+                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
+        ;
+
+        return http.build();
+    }
 }
