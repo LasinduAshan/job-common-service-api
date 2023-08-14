@@ -1,6 +1,6 @@
 package com.job.common.exception;
 
-public class RecordNotFoundException extends BaseException {
+public class RecordNotFoundException extends RuntimeException {
     public RecordNotFoundException() {
     }
 

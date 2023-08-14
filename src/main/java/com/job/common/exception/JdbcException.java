@@ -1,6 +1,6 @@
 package com.job.common.exception;
 
-public class JdbcException extends BaseException {
+public class JdbcException extends RuntimeException {
     public JdbcException() {
     }
 

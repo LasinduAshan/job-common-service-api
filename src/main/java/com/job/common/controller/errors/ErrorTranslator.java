@@ -14,52 +14,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 @ControllerAdvice
 public class ErrorTranslator {
 
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorDto> handleInvalidExcelCellException(InvalidExcelCellException ex, NativeWebRequest request) {
-        log.error(ex.getMessage(), ex);
-        ErrorDto errorDto = new ErrorDto(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorDto> handleInvalidAttachmentException(InvalidAttachmentException ex, NativeWebRequest request) {
-        log.error(ex.getMessage(), ex);
-        ErrorDto errorDto = new ErrorDto(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorDto> handleBackDateException(BackDateException ex, NativeWebRequest request) {
-        log.error(ex.getMessage(), ex);
-        ErrorDto errorDto = new ErrorDto(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorDto> handleAttachmentException(AttachmentException ex, NativeWebRequest request) {
-        log.error(ex.getMessage(), ex);
-        ErrorDto errorDto = new ErrorDto(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
-    }
-
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorDto> handleUnableDeleteException(UnableDeleteException ex, NativeWebRequest request) {
-        log.error(ex.getMessage(), ex);
-        ErrorDto errorDto = new ErrorDto(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
-    }
-
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorDto> handleEmptyContentException(EmptyContentException ex, NativeWebRequest request) {
-        log.error(ex.getMessage());
-        ErrorDto errorDto = new ErrorDto(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
-    }
-
-
     @ExceptionHandler
     public ResponseEntity<ErrorDto> handleNoSuchElementException(RecordNotFoundException ex, NativeWebRequest request) {
         log.error(ex.getMessage());
@@ -89,13 +43,6 @@ public class ErrorTranslator {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorDto> handleInvalidFileTypeException(InvalidFileTypeException ex, NativeWebRequest request) {
-        log.error(ex.getMessage());
-        ErrorDto errorDto = new ErrorDto(HttpStatus.NON_AUTHORITATIVE_INFORMATION.value(), ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NON_AUTHORITATIVE_INFORMATION).body(errorDto);
-    }
-
-    @ExceptionHandler
     public ResponseEntity<ErrorDto> handleRequiredValueException(RequiredValueException ex, NativeWebRequest request) {
         log.error(ex.getMessage());
         ErrorDto errorDto = new ErrorDto(HttpStatus.UNPROCESSABLE_ENTITY.value(), ex.getMessage());
@@ -121,18 +68,6 @@ public class ErrorTranslator {
         log.error(ex.getMessage());
         ErrorDto errorDto = new ErrorDto(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDto);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorDto> invalidMobileNumberException(InvalidMobileNumberException ex, NativeWebRequest request) {
-        ErrorDto errorDto = new ErrorDto(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorDto> invalidEmailException(InvalidEmailException ex, NativeWebRequest request) {
-        ErrorDto errorDto = new ErrorDto(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
     }
 
     @ExceptionHandler

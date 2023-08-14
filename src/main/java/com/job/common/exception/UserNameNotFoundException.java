@@ -1,6 +1,6 @@
 package com.job.common.exception;
 
-public class UserNameNotFoundException extends BaseException {
+public class UserNameNotFoundException extends RuntimeException {
     public UserNameNotFoundException() {
         super("Username is not found");
     }

@@ -1,6 +1,6 @@
 package com.job.common.exception;
 
-public class UnAuthorizeException extends BaseException {
+public class UnAuthorizeException extends RuntimeException {
     public UnAuthorizeException() {
     }
 

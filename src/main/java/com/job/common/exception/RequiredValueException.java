@@ -1,6 +1,6 @@
 package com.job.common.exception;
 
-public class RequiredValueException extends BaseException {
+public class RequiredValueException extends RuntimeException {
     public RequiredValueException() {
     }
 

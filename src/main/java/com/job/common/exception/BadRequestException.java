@@ -1,6 +1,6 @@
 package com.job.common.exception;
 
-public class BadRequestException extends BaseException {
+public class BadRequestException extends RuntimeException {
     public BadRequestException() {
     }
 

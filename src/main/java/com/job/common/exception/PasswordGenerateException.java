@@ -1,6 +1,6 @@
 package com.job.common.exception;
 
-public class PasswordGenerateException extends BaseException {
+public class PasswordGenerateException extends RuntimeException {
     public PasswordGenerateException() {
     }
 

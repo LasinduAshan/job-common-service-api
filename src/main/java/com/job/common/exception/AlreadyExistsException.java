@@ -1,9 +1,6 @@
 package com.job.common.exception;
 
-/**
- * @author Thanura Rashmika
- */
-public class AlreadyExistsException extends BaseException {
+public class AlreadyExistsException extends RuntimeException {
     public AlreadyExistsException() {
     }
 
