@@ -20,22 +20,22 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class AuthenticationApi {
 
-  private final AuthenticationUtil service;
+    private final AuthenticationUtil service;
 
-  @PostMapping("/register")
-  public ResponseEntity<AuthenticationResponseDto> register(@RequestBody RegisterRequestDto request) {
-    return ResponseEntity.ok(service.register(request));
-  }
+    @PostMapping("/register")
+    public ResponseEntity<AuthenticationResponseDto> register(@RequestBody RegisterRequestDto request) {
+        return ResponseEntity.ok(service.register(request));
+    }
 
-  @PostMapping("/authenticate")
-  public ResponseEntity<AuthenticationResponseDto> authenticate(@RequestBody AuthenticationRequestDto request) {
-    return ResponseEntity.ok(service.authenticate(request));
-  }
+    @PostMapping("/authenticate")
+    public ResponseEntity<AuthenticationResponseDto> authenticate(@RequestBody AuthenticationRequestDto request) {
+        return ResponseEntity.ok(service.authenticate(request));
+    }
 
-  @PostMapping("/refresh-token")
-  public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    service.refreshToken(request, response);
-  }
+    @PostMapping("/refresh-token")
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        service.refreshToken(request, response);
+    }
 
 
 }

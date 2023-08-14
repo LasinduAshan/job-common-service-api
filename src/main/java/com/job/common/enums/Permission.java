@@ -13,9 +13,7 @@ public enum Permission {
     CONSULTANT_READ("management:read"),
     CONSULTANT_UPDATE("management:update"),
     CONSULTANT_CREATE("management:create"),
-    CONSULTANT_DELETE("management:delete")
-
-    ;
+    CONSULTANT_DELETE("management:delete");
 
     @Getter
     private final String permission;
