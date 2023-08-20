@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 public class Token {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
 
-    @Column(unique = true)
+    @Column(unique = true, length = 2048)
     public String token;
 
     @Enumerated(EnumType.STRING)
