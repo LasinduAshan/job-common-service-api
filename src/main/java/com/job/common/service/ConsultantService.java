@@ -6,8 +6,8 @@ import com.job.common.dto.ConsultantDto;
 import java.util.List;
 
 public interface ConsultantService {
-    ConsultantDto save(ConsultantDto consultantDto);
-    ConsultantDto update(ConsultantDto consultantDto);
+    ConsultantDto save(ConsultantDto consultantDto) throws Exception;
+    ConsultantDto update(ConsultantDto consultantDto) throws Exception;
     ConsultantDto delete(Long consultantId);
     ConsultantDto getConsultantDetailById(Long consultantId);
     List<ConsultantDto> getAllConsultantDetailList();

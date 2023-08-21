@@ -1,16 +1,17 @@
 package com.job.common.entity;
 
+import com.job.common.dto.ConsultantDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.modelmapper.ModelMapper;
 
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
 @Entity
-//public class Consultant extends SuperEntity<QuotationSummaryDto> {
-public class Consultant {
+public class Consultant extends SuperEntity<ConsultantDto> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
@@ -34,6 +35,17 @@ public class Consultant {
     private String country;
 
     @OneToMany(targetEntity = AppointmentDetail.class, mappedBy = "consultant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<AppointmentDetail> appointmentDetailList;
+    private List<AppointmentDetail> appointmentDetailList;
 
+    @OneToMany(targetEntity = Availability.class, mappedBy = "consultant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Availability> availabilityList;
+
+    @Override
+    public ConsultantDto toDto(ModelMapper modelMapper) {
+        ConsultantDto consultantDto = modelMapper.map(this, ConsultantDto.class);
+        if (null != this.availabilityList)
+            this.availabilityList.forEach(availability ->
+                    consultantDto.getAvailabilityDtoList().add(availability.toDto(modelMapper)));
+        return consultantDto;
+    }
 }

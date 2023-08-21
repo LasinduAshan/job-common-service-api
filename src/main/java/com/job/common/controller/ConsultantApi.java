@@ -2,11 +2,14 @@ package com.job.common.controller;
 
 import com.job.common.dto.ConsultantDto;
 import com.job.common.service.ConsultantService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/consultant-service")
@@ -33,7 +36,17 @@ public class ConsultantApi {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ConsultantDto> saveConsultant(@RequestBody ConsultantDto consultantDto) throws Exception {
+    public ResponseEntity<ConsultantDto> saveConsultant(@RequestBody @Valid ConsultantDto consultantDto) throws Exception {
         return ResponseEntity.status(HttpStatus.OK).body(consultantService.save(consultantDto));
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<ConsultantDto> updateConsultant(@RequestBody  @Valid ConsultantDto consultantDto) throws Exception {
+        return ResponseEntity.status(HttpStatus.OK).body(consultantService.update(consultantDto));
+    }
+
+    @GetMapping("/view-all")
+    public ResponseEntity<List<ConsultantDto>> getAllConsultants() {
+        return ResponseEntity.status(HttpStatus.OK).body(consultantService.getAllConsultantDetailList());
     }
 }
