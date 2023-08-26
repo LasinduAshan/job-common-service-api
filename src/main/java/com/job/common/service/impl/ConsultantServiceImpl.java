@@ -3,10 +3,10 @@ package com.job.common.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.job.common.dto.AvailabilityDto;
 import com.job.common.dto.ConsultantDto;
-import com.job.common.dto.auth.AuthenticationResponseDto;
 import com.job.common.dto.auth.RegisterRequestDto;
 import com.job.common.entity.Availability;
 import com.job.common.entity.Consultant;
+import com.job.common.enums.Role;
 import com.job.common.exception.RequiredValueException;
 import com.job.common.repository.AvailabilityRepository;
 import com.job.common.repository.ConsultantRepository;
@@ -36,16 +36,15 @@ public class ConsultantServiceImpl implements ConsultantService {
 
     @Transactional
     @Override
-    public ConsultantDto save(ConsultantDto consultantDto) throws Exception{
+    public ConsultantDto save(ConsultantDto consultantDto) throws Exception {
 
         if (null == consultantDto) {
             throw new RequiredValueException("Required Values are missing");
         }
 
-//        Consultant consultant = modelMapper.map(consultantDto, Consultant.class);
         Consultant consultant = consultantDto.toEntity(modelMapper);
         RegisterRequestDto registerRequestDto = modelMapper.map(consultantDto, RegisterRequestDto.class);
-
+        registerRequestDto.setRole(Role.CONSULTANT);
 
         try {
             authenticationUtil.register(registerRequestDto);
@@ -53,26 +52,17 @@ public class ConsultantServiceImpl implements ConsultantService {
 
             List<Availability> availabilityList = new ArrayList<>();
 
+            for (AvailabilityDto availabilityDto : consultantDto.getAvailabilityDtoList()) {
+                Availability availability = availabilityDto.toEntity(modelMapper);
+                availability.setConsultant(saveConsultant);
+                availability.setTimeSlots(objectMapper.writeValueAsString(Utility
+                        .generateValues(
+                                availabilityDto.getStartHour().concat(":").concat(availabilityDto.getStartMinutes()),
+                                availabilityDto.getEndHour().concat(":").concat(availabilityDto.getEndMinutes()))));
 
-            for (AvailabilityDto slot : consultantDto.getAvailabilityDtoList()) {
-                Availability av = Availability.builder()
-                        .day(slot.getDay())
-                        .startHour(slot.getStartHour())
-                        .startMinutes(slot.getStartMinutes())
-                        .endHour(slot.getEndHour())
-                        .endMinutes(slot.getEndMinutes())
-                        .isWorkDay(slot.getIsWorkDay())
-                        .timeSlots(objectMapper.writeValueAsString(Utility
-                                .generateValues(
-                                        slot.getStartHour().concat(":").concat(slot.getStartMinutes()),
-                                        slot.getEndHour().concat(":").concat(slot.getEndMinutes()))))
-                        .consultant(saveConsultant)
-                        .build();
-
-                availabilityList.add(av);
+                availabilityList.add(availability);
             }
             availabilityRepository.saveAll(availabilityList);
-//            consultantDto.setConsultantId(saveConsultant.getConsultantId());
 
             return saveConsultant.toDto(modelMapper);
         } catch (Exception e) {
@@ -82,34 +72,27 @@ public class ConsultantServiceImpl implements ConsultantService {
     }
 
     @Override
-    public ConsultantDto update(ConsultantDto consultantDto) throws Exception{
+    public ConsultantDto update(ConsultantDto consultantDto) throws Exception {
 
         try {
             Optional<Consultant> existConsultant = consultantRepository.findById(consultantDto.getConsultantId());
-            if (existConsultant.isPresent()){
+            if (existConsultant.isPresent()) {
 
-                Consultant consultant = modelMapper.map(consultantDto, Consultant.class);
-                Consultant saveConsultant = consultantRepository.save(consultant);
+                Consultant saveConsultant = consultantRepository.save(consultantDto.toEntity(modelMapper));
 
                 List<Availability> availabilityList = new ArrayList<>();
 
-                for (AvailabilityDto slot : consultantDto.getAvailabilityDtoList()) {
-                    Availability av = Availability.builder()
-                            .availabilityId(slot.getAvailabilityId())
-                            .day(slot.getDay())
-                            .startHour(slot.getStartHour())
-                            .startMinutes(slot.getStartMinutes())
-                            .endHour(slot.getEndHour())
-                            .endMinutes(slot.getEndMinutes())
-                            .isWorkDay(slot.getIsWorkDay())
-                            .timeSlots(objectMapper.writeValueAsString(Utility
-                                    .generateValues(
-                                            slot.getStartHour().concat(":").concat(slot.getStartMinutes()),
-                                            slot.getEndHour().concat(":").concat(slot.getEndMinutes()))))
-                            .consultant(saveConsultant)
-                            .build();
+                for (AvailabilityDto availabilityDto : consultantDto.getAvailabilityDtoList()) {
 
-                    availabilityList.add(av);
+                    Availability availability = availabilityDto.toEntity(modelMapper);
+                    availability.setConsultant(saveConsultant);
+                    availability.setTimeSlots(objectMapper.writeValueAsString(Utility
+                            .generateValues(
+                                    availabilityDto.getStartHour().concat(":").concat(availabilityDto.getStartMinutes()),
+                                    availabilityDto.getEndHour().concat(":").concat(availabilityDto.getEndMinutes()))));
+
+                    availabilityList.add(availability);
+
                 }
                 availabilityRepository.saveAll(availabilityList);
                 consultantDto.setConsultantId(saveConsultant.getConsultantId());
@@ -134,15 +117,9 @@ public class ConsultantServiceImpl implements ConsultantService {
     @Override
     public List<ConsultantDto> getAllConsultantDetailList() {
 
-        List<ConsultantDto> consultantDtoList = new ArrayList<>();
-        List<Consultant> all = consultantRepository.findAll();
-
-        for (Consultant dto : all) {
-//            ConsultantDto consultantDto = modelMapper.map(dto, ConsultantDto.class);
-            ConsultantDto consultantDto = dto.toDto(modelMapper);
-//            List<Availability> byConsultantId = availabilityRepository.findByConsultantId(dto.getId());
-            consultantDtoList.add(consultantDto);
-        }
-        return consultantDtoList;
+        return consultantRepository.findAll()
+                .stream()
+                .map(consultant -> consultant.toDto(modelMapper))
+                .toList();
     }
 }

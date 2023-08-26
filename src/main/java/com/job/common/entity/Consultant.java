@@ -34,10 +34,11 @@ public class Consultant extends SuperEntity<ConsultantDto> {
     @Column
     private String country;
 
-    @OneToMany(targetEntity = AppointmentDetail.class, mappedBy = "consultant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+
+    @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<AppointmentDetail> appointmentDetailList;
 
-    @OneToMany(targetEntity = Availability.class, mappedBy = "consultant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Availability> availabilityList;
 
     @Override
@@ -46,6 +47,9 @@ public class Consultant extends SuperEntity<ConsultantDto> {
         if (null != this.availabilityList)
             this.availabilityList.forEach(availability ->
                     consultantDto.getAvailabilityDtoList().add(availability.toDto(modelMapper)));
+        if (null != this.appointmentDetailList)
+            this.appointmentDetailList.forEach(appointmentDetail ->
+                    consultantDto.getAppointmentDetailDtoList().add(appointmentDetail.toDto(modelMapper)));
         return consultantDto;
     }
 }

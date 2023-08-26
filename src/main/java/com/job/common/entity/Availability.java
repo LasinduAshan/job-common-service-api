@@ -1,15 +1,13 @@
 package com.job.common.entity;
 
 import com.job.common.dto.AvailabilityDto;
-import com.job.common.dto.ConsultantDto;
 import com.job.common.enums.Days;
 import jakarta.persistence.*;
 import lombok.*;
 import org.modelmapper.ModelMapper;
 
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 @Entity
 public class Availability extends SuperEntity<AvailabilityDto> {
     @Id
