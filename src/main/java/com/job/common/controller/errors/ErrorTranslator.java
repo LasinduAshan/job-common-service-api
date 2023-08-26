@@ -6,11 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.NativeWebRequest;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Slf4j
@@ -38,34 +40,12 @@ public class ErrorTranslator {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDto);
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorDto> handleBadRequestAlertException(MethodArgumentNotValidException ex, NativeWebRequest request) {
-        log.error(ex.getMessage());
-        ErrorDto errorDto = new ErrorDto(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
-    }
-
     @ExceptionHandler
     public ResponseEntity<ErrorDto> handleRequiredValueException(RequiredValueException ex, NativeWebRequest request) {
         log.error(ex.getMessage());
         ErrorDto errorDto = new ErrorDto(HttpStatus.UNPROCESSABLE_ENTITY.value(), ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errorDto);
     }
-
-/*
-    @ExceptionHandler
-    public ResponseEntity<ErrorDto> handleBadRequestAlertException(MethodArgumentNotValidException ex, NativeWebRequest request) {
-        ValidationErrorDto errorDto = new ValidationErrorDto(HttpStatus.BAD_REQUEST.value(), "Validation failure");
-        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            InvalidField invalidField = new InvalidField();
-            invalidField.setField(error.getField());
-            invalidField.setErrorMessage(error.getDefaultMessage());
-            errorDto.getInvalidFields().add(invalidField);
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
-    }
-*/
 
     @ExceptionHandler
     public ResponseEntity<ErrorDto> handleUnAuthorizeException(UnAuthorizeException ex, NativeWebRequest request) {
@@ -78,5 +58,15 @@ public class ErrorTranslator {
     public ResponseEntity<ErrorDto> handleAlreadyExistElementException(AlreadyExistsException ex, NativeWebRequest request) {
         ErrorDto errorDto = new ErrorDto(HttpStatus.CONFLICT.value(), ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDto);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleInvalidArgument(MethodArgumentNotValidException ex) {
+        Map<String, String> errorMap = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error -> {
+            errorMap.put(error.getField(), error.getDefaultMessage());
+        });
+        return errorMap;
     }
 }
