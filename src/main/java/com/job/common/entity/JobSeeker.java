@@ -6,7 +6,6 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -29,9 +28,8 @@ public class JobSeeker {
     private String preferJobType;
     @Column
     private String preferCountry;
-
-
-
+    @Column
+    private Integer age;
 
     @OneToMany(targetEntity = AppointmentDetail.class, mappedBy = "jobSeeker", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<AppointmentDetail> appointmentDetailList = new ArrayList<>();
