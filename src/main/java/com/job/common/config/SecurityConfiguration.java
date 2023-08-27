@@ -38,7 +38,8 @@ public class SecurityConfiguration {
         http.csrf()
                 .disable().cors().and().authorizeHttpRequests()
                 .requestMatchers(
-                        "/api/v1/auth/**"
+                        "/api/v1/auth/**",
+                        "/api/v1/booking-service/create"
                 )
                 .permitAll()
 
