@@ -17,26 +17,6 @@ public class ConsultantApi {
 
     private final ConsultantService consultantService;
 
-    @GetMapping
-    public ResponseEntity<String> get() {
-        return ResponseEntity.status(HttpStatus.OK).body("GET:: consultant controller");
-    }
-
-    @PostMapping
-    public ResponseEntity<String> post() {
-        return ResponseEntity.status(HttpStatus.OK).body("POST:: consultant controller");
-    }
-
-    @PutMapping
-    public ResponseEntity<String> put() {
-        return ResponseEntity.status(HttpStatus.OK).body("PUT:: consultant controller");
-    }
-
-    @DeleteMapping
-    public ResponseEntity<String> delete() {
-        return ResponseEntity.status(HttpStatus.OK).body("DELETE:: consultant controller");
-    }
-
     @PostMapping("/create")
     public ResponseEntity<ConsultantDto> saveConsultant(@RequestBody @Valid ConsultantDto consultantDto) throws Exception {
         return ResponseEntity.status(HttpStatus.OK).body(consultantService.save(consultantDto));
@@ -47,6 +27,10 @@ public class ConsultantApi {
         return ResponseEntity.status(HttpStatus.OK).body(consultantService.update(consultantDto));
     }
 
+    @GetMapping("/view/{consultantId}")
+    public ResponseEntity<ConsultantDto> getConsultantDetailById(@PathVariable Long consultantId) {
+        return ResponseEntity.status(HttpStatus.OK).body(consultantService.getConsultantDetailById(consultantId));
+    }
     @GetMapping("/view-all")
     public ResponseEntity<List<ConsultantDto>> getAllConsultants() {
         return ResponseEntity.status(HttpStatus.OK).body(consultantService.getAllConsultantDetailList());

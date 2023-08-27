@@ -7,6 +7,7 @@ import com.job.common.dto.auth.RegisterRequestDto;
 import com.job.common.entity.Availability;
 import com.job.common.entity.Consultant;
 import com.job.common.enums.Role;
+import com.job.common.exception.RecordNotFoundException;
 import com.job.common.exception.RequiredValueException;
 import com.job.common.repository.AvailabilityRepository;
 import com.job.common.repository.ConsultantRepository;
@@ -111,7 +112,12 @@ public class ConsultantServiceImpl implements ConsultantService {
 
     @Override
     public ConsultantDto getConsultantDetailById(Long consultantId) {
-        return null;
+        Optional<Consultant> consultantOptional = consultantRepository.findById(consultantId);
+        if (consultantOptional.isPresent()) {
+            return consultantOptional.get().toDto(modelMapper);
+        } else {
+            throw new RecordNotFoundException("Consultant record not found");
+        }
     }
 
     @Override
