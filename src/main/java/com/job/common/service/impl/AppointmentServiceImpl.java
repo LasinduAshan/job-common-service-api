@@ -11,16 +11,15 @@ import com.job.common.repository.AppointmentDetailRepository;
 import com.job.common.repository.ConsultantRepository;
 import com.job.common.repository.JobSeekerRepository;
 import com.job.common.service.AppointmentService;
+import com.job.common.service.SendEmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -30,6 +29,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final ModelMapper modelMapper;
     private final JobSeekerRepository jobSeekerRepository;
     private final ConsultantRepository consultantRepository;
+    private final SendEmailService sendEmailService;
 
 
     @Transactional
@@ -43,6 +43,10 @@ public class AppointmentServiceImpl implements AppointmentService {
             consultant = consultantRepository.findByCountry(consultant.getCountry());
         }
 
+        if (consultant == null) {
+            throw new RecordNotFoundException("Consultant not registered in this system.");
+        }
+
         AppointmentDetail appointment = new AppointmentDetail();
         appointment.setJobSeeker(saveJobSeeker);
         appointment.setConsultant(consultant);
@@ -53,6 +57,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         return jobSeekerDto;
     }
 
+    @Transactional
     @Override
     public AppointmentDetailDto acceptAppointment(AppointmentDetailDto appointmentDetailDto) {
 
@@ -67,6 +72,17 @@ public class AppointmentServiceImpl implements AppointmentService {
             appointmentDetail.setSpecialNote(appointmentDetailDto.getSpecialNote());
 
             appointmentDetailRepository.save(appointmentDetail);
+
+
+            String jobSeekerEmail = appointmentDetail.getJobSeeker().getEmail();
+            String message = "Your appointment date and time:".concat(appointmentDetailDto.getDate()
+                    .concat(" : ").concat(appointmentDetailDto.getTime()));
+
+            if (null != appointmentDetailDto.getSpecialNote() && !appointmentDetailDto.getSpecialNote().isEmpty()) {
+                message = message.concat("\n").concat(appointmentDetailDto.getSpecialNote());
+            }
+            sendEmailService.sendEmail(jobSeekerEmail, "Your Appointment Details", message);
+
         } else {
             throw new RecordNotFoundException("Appointment record not found");
         }
