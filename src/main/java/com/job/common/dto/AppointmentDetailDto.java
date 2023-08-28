@@ -25,6 +25,9 @@ public class AppointmentDetailDto extends SuperDto<AppointmentDetail> {
 
     private String consultantName;
     private String jobSeekerName;
+    private String jobSeekerJobType;
+    private String jobSeekerCountry;
+    private Long consultantId;
 
     @Override
     public AppointmentDetail toEntity(ModelMapper modelMapper) {

@@ -40,9 +40,12 @@ public class AppointmentDetail extends SuperEntity<AppointmentDetailDto> {
         if (null != this.consultant) {
             appointmentDetailDto.setConsultantName(
                     this.consultant.getFirstName().concat(" ").concat(this.consultant.getLastName()));
+            appointmentDetailDto.setConsultantId(this.consultant.getConsultantId());
         }
         if (null != this.jobSeeker) {
             appointmentDetailDto.setJobSeekerName(this.jobSeeker.getName());
+            appointmentDetailDto.setJobSeekerJobType(this.jobSeeker.getPreferJobType());
+            appointmentDetailDto.setJobSeekerCountry(this.jobSeeker.getPreferCountry());
         }
         return appointmentDetailDto;
     }
