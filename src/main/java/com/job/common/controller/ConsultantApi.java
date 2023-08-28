@@ -1,6 +1,9 @@
 package com.job.common.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.job.common.dto.AvailabilityDto;
 import com.job.common.dto.ConsultantDto;
+import com.job.common.dto.ListItemDto;
 import com.job.common.service.ConsultantService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,4 +38,10 @@ public class ConsultantApi {
     public ResponseEntity<List<ConsultantDto>> getAllConsultants() {
         return ResponseEntity.status(HttpStatus.OK).body(consultantService.getAllConsultantDetailList());
     }
+
+    @GetMapping("/availability-time-slot/{date}/{day}/{consultantId}")
+    public ResponseEntity<List<ListItemDto>> getAvailabilityTimeSlots(@PathVariable String date, @PathVariable String day, @PathVariable Long consultantId) throws JsonProcessingException {
+        return ResponseEntity.status(HttpStatus.OK).body(consultantService.getAvailabilityTimeSlots(date, day, consultantId));
+    }
+
 }
