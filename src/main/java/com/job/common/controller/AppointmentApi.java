@@ -18,18 +18,22 @@ public class AppointmentApi {
 
     private final AppointmentService appointmentService;
     @PostMapping("/create")
-    public ResponseEntity<JobSeekerDto> saveJobSeeker(@RequestBody @Valid JobSeekerDto jobSeekerDto) throws Exception {
+    public ResponseEntity<JobSeekerDto> saveJobSeeker(@RequestBody @Valid JobSeekerDto jobSeekerDto) {
         return ResponseEntity.status(HttpStatus.OK).body(appointmentService.save(jobSeekerDto));
     }
 
     @PostMapping("/accept-appointment")
-    public ResponseEntity<AppointmentDetailDto> acceptAppointment(@RequestBody @Valid AppointmentDetailDto appointmentDetailDto) throws Exception {
+    public ResponseEntity<AppointmentDetailDto> acceptAppointment(@RequestBody @Valid AppointmentDetailDto appointmentDetailDto) {
         return ResponseEntity.status(HttpStatus.OK).body(appointmentService.acceptAppointment(appointmentDetailDto));
     }
 
     @GetMapping("/view-all-admin")
-    public ResponseEntity<List<AppointmentDetailDto>> getAllAppointmentDetailListForAdmin() throws Exception {
+    public ResponseEntity<List<AppointmentDetailDto>> getAllAppointmentDetailListForAdmin() {
         return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getAllAppointmentDetailListForAdmin());
     }
 
+    @GetMapping("/view-all-consultant/{email}/{appointmentStatus}")
+    public ResponseEntity<List<AppointmentDetailDto>> getAllAppointmentDetailListForConsultant(@PathVariable String email, @PathVariable String appointmentStatus) {
+        return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getAllAppointmentDetailListForConsultant(email, appointmentStatus));
+    }
 }

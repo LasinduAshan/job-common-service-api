@@ -14,4 +14,6 @@ public interface AppointmentService {
 
     List<AppointmentDetailDto> getAllAppointmentDetailListForAdmin();
 
+    List<AppointmentDetailDto> getAllAppointmentDetailListForConsultant(String email, String appointmentStatus);
+
 }

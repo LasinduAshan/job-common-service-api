@@ -82,4 +82,20 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .map(appointmentDetail -> appointmentDetail.toDto(modelMapper))
                 .toList();
     }
+
+    @Override
+    public List<AppointmentDetailDto> getAllAppointmentDetailListForConsultant(String email, String appointmentStatus) {
+        Optional<Consultant> consultantOptional = consultantRepository.findByEmail(email);
+
+        if (consultantOptional.isPresent()) {
+            return appointmentDetailRepository
+                    .findAllByAppointmentStatusAndConsultantConsultantId(
+                            AppointmentStatus.valueOf(appointmentStatus), consultantOptional.get().getConsultantId())
+                    .stream()
+                    .map(appointmentDetail -> appointmentDetail.toDto(modelMapper))
+                    .toList();
+        } else {
+            throw new RecordNotFoundException("Result not found ");
+        }
+    }
 }
