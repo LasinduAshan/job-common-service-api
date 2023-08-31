@@ -2,6 +2,7 @@ package com.job.common.controller;
 
 import com.job.common.dto.AppointmentDetailDto;
 import com.job.common.dto.JobSeekerDto;
+import com.job.common.dto.ListItemDto;
 import com.job.common.service.AppointmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.List;
 public class AppointmentApi {
 
     private final AppointmentService appointmentService;
+
     @PostMapping("/create")
     public ResponseEntity<JobSeekerDto> saveJobSeeker(@RequestBody @Valid JobSeekerDto jobSeekerDto) {
         return ResponseEntity.status(HttpStatus.OK).body(appointmentService.save(jobSeekerDto));
@@ -40,5 +42,15 @@ public class AppointmentApi {
     @GetMapping("/view-all-consultant/{email}/{appointmentStatus}")
     public ResponseEntity<List<AppointmentDetailDto>> getAllAppointmentDetailListForConsultant(@PathVariable String email, @PathVariable String appointmentStatus) {
         return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getAllAppointmentDetailListForConsultant(email, appointmentStatus));
+    }
+
+    @GetMapping("/view-admin-dashboard")
+    public ResponseEntity<List<ListItemDto>> getAdminDashboardDetails() {
+        return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getAdminDashboardDetails());
+    }
+
+    @GetMapping("/view-consultant-dashboard/{email}")
+    public ResponseEntity<List<ListItemDto>> getConsultantDashboardDetails(@PathVariable String email) {
+        return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getConsultantDashboardDetails(email));
     }
 }
