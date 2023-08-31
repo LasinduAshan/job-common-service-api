@@ -40,7 +40,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         JobSeeker saveJobSeeker = jobSeekerRepository.save(jobSeeker);
         Consultant consultant = consultantRepository.findByCountryAndJobType(jobSeeker.getPreferCountry(), jobSeeker.getPreferJobType());
         if (consultant == null) {
-            consultant = consultantRepository.findByCountry(consultant.getCountry());
+            consultant = consultantRepository.findByCountry(jobSeeker.getPreferCountry());
         }
 
         if (consultant == null) {
@@ -71,7 +71,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             appointmentDetail.setTime(appointmentDetailDto.getTime());
             appointmentDetail.setSpecialNote(appointmentDetailDto.getSpecialNote());
 
-            appointmentDetailRepository.save(appointmentDetail);
+            AppointmentDetail save = appointmentDetailRepository.save(appointmentDetail);
 
 
             String jobSeekerEmail = appointmentDetail.getJobSeeker().getEmail();
@@ -82,11 +82,28 @@ public class AppointmentServiceImpl implements AppointmentService {
                 message = message.concat("\n").concat(appointmentDetailDto.getSpecialNote());
             }
             sendEmailService.sendEmail(jobSeekerEmail, "Your Appointment Details", message);
+            appointmentDetailDto = save.toDto(modelMapper);
 
         } else {
             throw new RecordNotFoundException("Appointment record not found");
         }
 
+        return appointmentDetailDto;
+    }
+
+    @Override
+    public AppointmentDetailDto rejectAppointment(AppointmentDetailDto appointmentDetailDto) {
+
+        Optional<AppointmentDetail> detailOptional = appointmentDetailRepository.findById(appointmentDetailDto.getAppointmentId());
+        if (detailOptional.isPresent()) {
+            AppointmentDetail appointmentDetail = detailOptional.get();
+            appointmentDetail.setRejectReason(appointmentDetailDto.getRejectReason());
+            appointmentDetail.setAppointmentStatus(AppointmentStatus.REJECTED);
+            AppointmentDetail save = appointmentDetailRepository.save(appointmentDetail);
+            appointmentDetailDto = save.toDto(modelMapper);
+        } else {
+            throw new RecordNotFoundException("Appointment record not found");
+        }
         return appointmentDetailDto;
     }
 
