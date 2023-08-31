@@ -2,6 +2,7 @@ package com.job.common.service.impl;
 
 import com.job.common.dto.AppointmentDetailDto;
 import com.job.common.dto.JobSeekerDto;
+import com.job.common.dto.ListItemDto;
 import com.job.common.entity.AppointmentDetail;
 import com.job.common.entity.Consultant;
 import com.job.common.entity.JobSeeker;
@@ -18,6 +19,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -130,5 +132,74 @@ public class AppointmentServiceImpl implements AppointmentService {
         } else {
             throw new RecordNotFoundException("Result not found ");
         }
+    }
+
+    @Override
+    public List<ListItemDto> getAdminDashboardDetails() {
+
+        List<ListItemDto> listItemDtoList = new ArrayList<>();
+
+        listItemDtoList.add(
+                ListItemDto.builder()
+                        .label("Today Appointments")
+                        .value(appointmentDetailRepository.findTodayAppointmentCount())
+                        .build());
+
+        listItemDtoList.add(
+                ListItemDto.builder()
+                        .label("Total Appointments")
+                        .value(appointmentDetailRepository.findAllAppointmentCount())
+                        .build());
+
+        listItemDtoList.add(
+                ListItemDto.builder()
+                        .label("Total Consultants")
+                        .value(consultantRepository.findAllConsultantCount())
+                        .build());
+
+        return listItemDtoList;
+    }
+
+    @Override
+    public List<ListItemDto> getConsultantDashboardDetails(String email) {
+
+        Optional<Consultant> consultantOptional = consultantRepository.findByEmail(email);
+        List<ListItemDto> listItemDtoList = new ArrayList<>();
+
+        if (consultantOptional.isPresent()) {
+
+            Long consultantId = consultantOptional.get().getConsultantId();
+            listItemDtoList.add(
+                    ListItemDto.builder()
+                            .label("Today Appointments")
+                            .value(appointmentDetailRepository.findTodayAppointmentCountForConsultant(consultantId))
+                            .build());
+
+            listItemDtoList.add(
+                    ListItemDto.builder()
+                            .label("Scheduled Appointments")
+                            .value(appointmentDetailRepository.findScheduledAppointmentCountForConsultant(
+                                    consultantId, String.valueOf(AppointmentStatus.SCHEDULED)))
+                            .build());
+
+            listItemDtoList.add(
+                    ListItemDto.builder()
+                            .label("Pending Appointments")
+                            .value(appointmentDetailRepository.findScheduledAppointmentCountForConsultant(
+                                    consultantId, String.valueOf(AppointmentStatus.PENDING)))
+                            .build());
+
+            listItemDtoList.add(
+                    ListItemDto.builder()
+                            .label("Rejected Appointments")
+                            .value(appointmentDetailRepository.findScheduledAppointmentCountForConsultant(
+                                    consultantId, String.valueOf(AppointmentStatus.REJECTED)))
+                            .build());
+
+        } else {
+            throw new RecordNotFoundException("Consultant record not found");
+        }
+
+        return listItemDtoList;
     }
 }
