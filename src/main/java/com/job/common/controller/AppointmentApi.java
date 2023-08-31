@@ -27,6 +27,11 @@ public class AppointmentApi {
         return ResponseEntity.status(HttpStatus.OK).body(appointmentService.acceptAppointment(appointmentDetailDto));
     }
 
+    @PostMapping("/reject-appointment")
+    public ResponseEntity<AppointmentDetailDto> rejectAppointment(@RequestBody @Valid AppointmentDetailDto appointmentDetailDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(appointmentService.rejectAppointment(appointmentDetailDto));
+    }
+
     @GetMapping("/view-all-admin")
     public ResponseEntity<List<AppointmentDetailDto>> getAllAppointmentDetailListForAdmin() {
         return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getAllAppointmentDetailListForAdmin());

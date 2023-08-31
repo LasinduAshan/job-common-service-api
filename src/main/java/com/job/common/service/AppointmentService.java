@@ -12,6 +12,8 @@ public interface AppointmentService {
 
     AppointmentDetailDto acceptAppointment(AppointmentDetailDto appointmentDetailDto);
 
+    AppointmentDetailDto rejectAppointment(AppointmentDetailDto appointmentDetailDto);
+
     List<AppointmentDetailDto> getAllAppointmentDetailListForAdmin();
 
     List<AppointmentDetailDto> getAllAppointmentDetailListForConsultant(String email, String appointmentStatus);
