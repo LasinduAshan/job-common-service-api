@@ -34,7 +34,6 @@ public class AvailabilityDto extends SuperDto<Availability> {
     @NotBlank
     private String endMinutes;
     private String timeSlots;
-    private Boolean isTimeSlotNotAvailable;
 
 
     @Override

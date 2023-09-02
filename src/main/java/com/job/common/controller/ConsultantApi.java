@@ -1,7 +1,6 @@
 package com.job.common.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.job.common.dto.AvailabilityDto;
 import com.job.common.dto.ConsultantDto;
 import com.job.common.dto.ListItemDto;
 import com.job.common.service.ConsultantService;
@@ -34,6 +33,12 @@ public class ConsultantApi {
     public ResponseEntity<ConsultantDto> getConsultantDetailById(@PathVariable Long consultantId) {
         return ResponseEntity.status(HttpStatus.OK).body(consultantService.getConsultantDetailById(consultantId));
     }
+
+    @GetMapping("/view/profile/{email}")
+    public ResponseEntity<ConsultantDto> getConsultantDetailByEmail(@PathVariable String email) {
+        return ResponseEntity.status(HttpStatus.OK).body(consultantService.getConsultantDetailByEmail(email));
+    }
+
     @GetMapping("/view-all")
     public ResponseEntity<List<ConsultantDto>> getAllConsultants() {
         return ResponseEntity.status(HttpStatus.OK).body(consultantService.getAllConsultantDetailList());
@@ -42,6 +47,11 @@ public class ConsultantApi {
     @GetMapping("/availability-time-slot/{date}/{day}/{consultantId}")
     public ResponseEntity<List<ListItemDto>> getAvailabilityTimeSlots(@PathVariable String date, @PathVariable String day, @PathVariable Long consultantId) throws JsonProcessingException {
         return ResponseEntity.status(HttpStatus.OK).body(consultantService.getAvailabilityTimeSlots(date, day, consultantId));
+    }
+
+    @DeleteMapping("/{consultantId}")
+    public ResponseEntity<ConsultantDto> deleteConsultantDetailById(@PathVariable Long consultantId) {
+        return ResponseEntity.status(HttpStatus.OK).body(consultantService.delete(consultantId));
     }
 
 }

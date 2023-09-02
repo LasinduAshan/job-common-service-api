@@ -21,14 +21,12 @@ public class Consultant extends SuperEntity<ConsultantDto> {
     private String firstName;
     @Column
     private String lastName;
-    @Column
+    @Column(unique = true)
     private String email;
     @Column
     private String idNo;
     @Column
     private String contactNo;
-    @Column
-    private String address;
     @Column
     private String jobType;
     @Column

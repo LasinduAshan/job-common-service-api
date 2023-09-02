@@ -18,9 +18,6 @@ public class Availability extends SuperEntity<AvailabilityDto> {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Days day;
-    private String startTime;
-    private String endTime;
-
     @Column
     private Boolean isWorkDay;
     @Column
