@@ -34,7 +34,6 @@ public class ConsultantDto extends SuperDto<Consultant> {
     @NotEmpty
     @NotBlank
     private String contactNo;
-    private String address;
     @NotEmpty
     @NotBlank
     private String jobType;

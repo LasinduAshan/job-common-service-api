@@ -9,14 +9,18 @@ import com.job.common.dto.auth.RegisterRequestDto;
 import com.job.common.entity.AppointmentDetail;
 import com.job.common.entity.Availability;
 import com.job.common.entity.Consultant;
+import com.job.common.entity.auth.User;
 import com.job.common.enums.AppointmentStatus;
 import com.job.common.enums.Days;
 import com.job.common.enums.Role;
+import com.job.common.exception.AlreadyExistsException;
 import com.job.common.exception.RecordNotFoundException;
 import com.job.common.exception.RequiredValueException;
 import com.job.common.repository.AppointmentDetailRepository;
 import com.job.common.repository.AvailabilityRepository;
 import com.job.common.repository.ConsultantRepository;
+import com.job.common.repository.auth.TokenRepository;
+import com.job.common.repository.auth.UserRepository;
 import com.job.common.service.ConsultantService;
 import com.job.common.util.AuthenticationUtil;
 import com.job.common.util.Utility;
@@ -26,7 +30,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +41,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ConsultantServiceImpl implements ConsultantService {
+    private final TokenRepository tokenRepository;
+    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
     private final ConsultantRepository consultantRepository;
@@ -59,6 +64,13 @@ public class ConsultantServiceImpl implements ConsultantService {
         registerRequestDto.setRole(Role.CONSULTANT);
 
         try {
+
+            Optional<Consultant> consultantOptional = consultantRepository.findByEmail(consultantDto.getEmail());
+            Optional<User> userOptional = userRepository.findByEmail(consultantDto.getEmail());
+            if (consultantOptional.isPresent() || userOptional.isPresent()) {
+                throw new AlreadyExistsException("This email already exists");
+            }
+
             authenticationUtil.register(registerRequestDto);
             Consultant saveConsultant = consultantRepository.save(consultant);
 
@@ -67,10 +79,15 @@ public class ConsultantServiceImpl implements ConsultantService {
             for (AvailabilityDto availabilityDto : consultantDto.getAvailabilityDtoList()) {
                 Availability availability = availabilityDto.toEntity(modelMapper);
                 availability.setConsultant(saveConsultant);
-                availability.setTimeSlots(objectMapper.writeValueAsString(Utility
-                        .generateValues(
-                                availabilityDto.getStartHour().concat(":").concat(availabilityDto.getStartMinutes()),
-                                availabilityDto.getEndHour().concat(":").concat(availabilityDto.getEndMinutes()))));
+                if (Boolean.TRUE.equals(availabilityDto.getIsWorkDay())) {
+                    availability.setTimeSlots(objectMapper.writeValueAsString(Utility
+                            .generateValues(
+                                    availabilityDto.getStartHour().concat(":").concat(availabilityDto.getStartMinutes()),
+                                    availabilityDto.getEndHour().concat(":").concat(availabilityDto.getEndMinutes()))));
+
+                } else {
+                    availability.setTimeSlots(null);
+                }
 
                 availabilityList.add(availability);
             }
@@ -98,11 +115,14 @@ public class ConsultantServiceImpl implements ConsultantService {
 
                     Availability availability = availabilityDto.toEntity(modelMapper);
                     availability.setConsultant(saveConsultant);
-                    availability.setTimeSlots(objectMapper.writeValueAsString(Utility
-                            .generateValues(
-                                    availabilityDto.getStartHour().concat(":").concat(availabilityDto.getStartMinutes()),
-                                    availabilityDto.getEndHour().concat(":").concat(availabilityDto.getEndMinutes()))));
-
+                    if (Boolean.TRUE.equals(availabilityDto.getIsWorkDay())) {
+                        availability.setTimeSlots(objectMapper.writeValueAsString(Utility
+                                .generateValues(
+                                        availabilityDto.getStartHour().concat(":").concat(availabilityDto.getStartMinutes()),
+                                        availabilityDto.getEndHour().concat(":").concat(availabilityDto.getEndMinutes()))));
+                    } else {
+                        availability.setTimeSlots(null);
+                    }
                     availabilityList.add(availability);
 
                 }
@@ -116,14 +136,41 @@ public class ConsultantServiceImpl implements ConsultantService {
         }
     }
 
+    @Transactional
     @Override
     public ConsultantDto delete(Long consultantId) {
-        return null;
+
+        Optional<Consultant> consultantOptional = consultantRepository.findById(consultantId);
+
+        if (consultantOptional.isPresent()) {
+            Optional<User> userOptional = userRepository.findByEmail(consultantOptional.get().getEmail());
+            if (userOptional.isPresent()) {
+                consultantRepository.delete(consultantOptional.get());
+                tokenRepository.deleteAllByUserId(userOptional.get().getId());
+                userRepository.delete(userOptional.get());
+            } else {
+                throw new RecordNotFoundException("User does not exists");
+            }
+        } else {
+            throw new RecordNotFoundException("Consultant does not exists");
+        }
+
+        return consultantOptional.get().toDto(modelMapper);
     }
 
     @Override
     public ConsultantDto getConsultantDetailById(Long consultantId) {
         Optional<Consultant> consultantOptional = consultantRepository.findById(consultantId);
+        if (consultantOptional.isPresent()) {
+            return consultantOptional.get().toDto(modelMapper);
+        } else {
+            throw new RecordNotFoundException("Consultant record not found");
+        }
+    }
+
+    @Override
+    public ConsultantDto getConsultantDetailByEmail(String email) {
+        Optional<Consultant> consultantOptional = consultantRepository.findByEmail(email);
         if (consultantOptional.isPresent()) {
             return consultantOptional.get().toDto(modelMapper);
         } else {
@@ -148,6 +195,10 @@ public class ConsultantServiceImpl implements ConsultantService {
         List<ListItemDto> listItemDtoList = new ArrayList<>();
         if (availabilityOptional.isPresent()) {
             String timeSlots = availabilityOptional.get().getTimeSlots();
+
+            if (Boolean.FALSE.equals(availabilityOptional.get().getIsWorkDay())) {
+                throw new RecordNotFoundException("Not a your working day");
+            }
 
             Map<String, AppointmentDetail> map = appointmentDetailRepository
                     .findAllByDateAndConsultant_ConsultantIdAndAppointmentStatus(date, consultantId, AppointmentStatus.SCHEDULED)

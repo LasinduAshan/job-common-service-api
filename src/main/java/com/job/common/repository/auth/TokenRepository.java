@@ -2,6 +2,7 @@ package com.job.common.repository.auth;
 
 import com.job.common.entity.auth.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -19,4 +20,9 @@ public interface TokenRepository extends JpaRepository<Token, Integer> {
   List<Token> findAllValidTokenByUser(Integer id);
 
   Optional<Token> findByToken(String token);
+
+  @Modifying
+  @Query(value = "DELETE FROM token WHERE user_id =?1", nativeQuery = true)
+  int deleteAllByUserId(Integer id);
+
 }
