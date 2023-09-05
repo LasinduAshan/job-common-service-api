@@ -7,6 +7,7 @@ import com.job.common.service.ConsultantService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,12 +20,12 @@ public class ConsultantApi {
 
     private final ConsultantService consultantService;
 
-    @PostMapping("/create")
+    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConsultantDto> saveConsultant(@RequestBody @Valid ConsultantDto consultantDto) throws Exception {
         return ResponseEntity.status(HttpStatus.OK).body(consultantService.save(consultantDto));
     }
 
-    @PutMapping("/update")
+    @PutMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConsultantDto> updateConsultant(@RequestBody @Valid ConsultantDto consultantDto) throws Exception {
         return ResponseEntity.status(HttpStatus.OK).body(consultantService.update(consultantDto));
     }

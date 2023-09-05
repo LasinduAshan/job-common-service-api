@@ -7,6 +7,7 @@ import com.job.common.service.AppointmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,17 +20,17 @@ public class AppointmentApi {
 
     private final AppointmentService appointmentService;
 
-    @PostMapping("/create")
+    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<JobSeekerDto> saveJobSeeker(@RequestBody @Valid JobSeekerDto jobSeekerDto) {
         return ResponseEntity.status(HttpStatus.OK).body(appointmentService.save(jobSeekerDto));
     }
 
-    @PostMapping("/accept-appointment")
+    @PostMapping(value = "/accept-appointment", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AppointmentDetailDto> acceptAppointment(@RequestBody @Valid AppointmentDetailDto appointmentDetailDto) {
         return ResponseEntity.status(HttpStatus.OK).body(appointmentService.acceptAppointment(appointmentDetailDto));
     }
 
-    @PostMapping("/reject-appointment")
+    @PostMapping(value = "/reject-appointment", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AppointmentDetailDto> rejectAppointment(@RequestBody @Valid AppointmentDetailDto appointmentDetailDto) {
         return ResponseEntity.status(HttpStatus.OK).body(appointmentService.rejectAppointment(appointmentDetailDto));
     }
