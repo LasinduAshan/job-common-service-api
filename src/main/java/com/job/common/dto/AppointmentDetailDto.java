@@ -24,7 +24,9 @@ public class AppointmentDetailDto extends SuperDto<AppointmentDetail> {
 
 
     private String consultantName;
+    private String consultantEmail;
     private String jobSeekerName;
+    private String jobSeekerEmail;
     private String jobSeekerJobType;
     private String jobSeekerCountry;
     private Long consultantId;

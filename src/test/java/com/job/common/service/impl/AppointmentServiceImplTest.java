@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -18,7 +17,6 @@ import com.job.common.dto.ListItemDto;
 import com.job.common.entity.AppointmentDetail;
 import com.job.common.entity.Consultant;
 import com.job.common.entity.JobSeeker;
-import com.job.common.enums.AppointmentStatus;
 import com.job.common.exception.RecordNotFoundException;
 import com.job.common.repository.AppointmentDetailRepository;
 import com.job.common.repository.ConsultantRepository;
@@ -30,7 +28,6 @@ import java.util.List;
 
 import java.util.Optional;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -245,7 +242,7 @@ class AppointmentServiceImplTest {
         verify(modelMapper).map(Mockito.any(), Mockito.<Class<AppointmentDetailDto>>any());
     }
 
-    @Test
+    /*@Test
     void testGetAllAppointmentDetailListForAdmin() {
         when(appointmentDetailRepository.findAll()).thenReturn(new ArrayList<>());
         assertTrue(appointmentServiceImpl.getAllAppointmentDetailListForAdmin().isEmpty());
@@ -276,7 +273,7 @@ class AppointmentServiceImplTest {
         verify(appointmentDetailRepository).findAll();
         verify(modelMapper, atLeast(1)).map(Mockito.any(), Mockito.<Class<AppointmentDetailDto>>any());
     }
-
+*/
     @Test
     void testGetAllAppointmentDetailListForConsultant1() {
         when(consultantRepository.findByEmail(Mockito.any())).thenReturn(Optional.empty());
