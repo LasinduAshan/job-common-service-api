@@ -19,6 +19,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -75,10 +77,20 @@ public class AppointmentServiceImpl implements AppointmentService {
 
             AppointmentDetail save = appointmentDetailRepository.save(appointmentDetail);
 
+            // Define a DateTimeFormatter for parsing and formatting
+            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("HH:mm");
+            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("h:mm a");
+
+            // Parse the input time
+            LocalTime parsedTime = LocalTime.parse(appointmentDetailDto.getTime(), inputFormatter);
+
+            // Format the parsed time in 12-hour format with AM/PM
+            String formattedTime = parsedTime.format(outputFormatter);
+
 
             String jobSeekerEmail = appointmentDetail.getJobSeeker().getEmail();
             String message = "Your appointment date and time:".concat(appointmentDetailDto.getDate()
-                    .concat(" : ").concat(appointmentDetailDto.getTime()));
+                    .concat(" : ").concat(formattedTime));
 
             if (null != appointmentDetailDto.getSpecialNote() && !appointmentDetailDto.getSpecialNote().isEmpty()) {
                 message = message.concat("\n").concat(appointmentDetailDto.getSpecialNote());
@@ -110,12 +122,20 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<AppointmentDetailDto> getAllAppointmentDetailListForAdmin() {
+    public List<AppointmentDetailDto> getAllAppointmentDetailListForAdmin(String appointmentStatus) {
 
-        return appointmentDetailRepository.findAll()
-                .stream()
-                .map(appointmentDetail -> appointmentDetail.toDto(modelMapper))
-                .toList();
+        if (appointmentStatus.equals("ALL")) {
+            return appointmentDetailRepository.findAll()
+                    .stream()
+                    .map(appointmentDetail -> appointmentDetail.toDto(modelMapper))
+                    .toList();
+        } else {
+            return appointmentDetailRepository.findAllByAppointmentStatus(AppointmentStatus.valueOf(appointmentStatus))
+                    .stream()
+                    .map(appointmentDetail -> appointmentDetail.toDto(modelMapper))
+                    .toList();
+        }
+
     }
 
     @Override
@@ -201,5 +221,18 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
 
         return listItemDtoList;
+    }
+
+    @Override
+    public AppointmentDetailDto completeAppointment(Long appointmentId) {
+        Optional<AppointmentDetail> appointmentDetailOptional = appointmentDetailRepository.findById(appointmentId);
+        if (appointmentDetailOptional.isPresent()) {
+            AppointmentDetail appointmentDetail = appointmentDetailOptional.get();
+            appointmentDetail.setAppointmentStatus(AppointmentStatus.COMPLETED);
+            AppointmentDetail save = appointmentDetailRepository.save(appointmentDetail);
+            return save.toDto(modelMapper);
+        } else {
+            throw new RecordNotFoundException("Appointment record not found");
+        }
     }
 }

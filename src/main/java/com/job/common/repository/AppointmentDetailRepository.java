@@ -16,6 +16,7 @@ public interface AppointmentDetailRepository extends JpaRepository<AppointmentDe
     List<AppointmentDetail> findAllByAppointmentStatusAndConsultantConsultantId(AppointmentStatus appointmentStatus, Long consultantID);
 
     List<AppointmentDetail> findAllByDateAndConsultant_ConsultantIdAndAppointmentStatus(String date, Long consultantId, AppointmentStatus appointmentStatus);
+    List<AppointmentDetail> findAllByAppointmentStatus(AppointmentStatus appointmentStatus);
 
     @Query(value = "SELECT COUNT(*) FROM appointment_detail WHERE DATE(created_date) = CURDATE()", nativeQuery = true)
     Long findTodayAppointmentCount();
