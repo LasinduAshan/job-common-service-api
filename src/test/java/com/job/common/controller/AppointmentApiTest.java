@@ -115,19 +115,18 @@ class AppointmentApiTest {
         verify(appointmentDetail).toDto(Mockito.any());
     }
 
-   /* @Test
-    void testGetAllAppointmentDetailListForAdmin() {
+    @Test
+    void testGetAllAppointmentDetailListForAdmin2() {
 
-        AppointmentDetailRepository appointmentDetailRepository = mock(AppointmentDetailRepository.class);
-        when(appointmentDetailRepository.findAll()).thenReturn(new ArrayList<>());
+        AppointmentServiceImpl appointmentService = mock(AppointmentServiceImpl.class);
+        when(appointmentService.getAllAppointmentDetailListForAdmin(Mockito.<String>any())).thenReturn(new ArrayList<>());
         ResponseEntity<List<AppointmentDetailDto>> actualAllAppointmentDetailListForAdmin = (new AppointmentApi(
-                new AppointmentServiceImpl(appointmentDetailRepository, new ModelMapper(), mock(JobSeekerRepository.class),
-                        mock(ConsultantRepository.class), mock(SendEmailService.class)))).getAllAppointmentDetailListForAdmin();
+                appointmentService)).getAllAppointmentDetailListForAdmin("PENDING");
         assertTrue(actualAllAppointmentDetailListForAdmin.hasBody());
         assertEquals(200, actualAllAppointmentDetailListForAdmin.getStatusCodeValue());
         assertTrue(actualAllAppointmentDetailListForAdmin.getHeaders().isEmpty());
-        verify(appointmentDetailRepository).findAll();
-    }*/
+        verify(appointmentService).getAllAppointmentDetailListForAdmin(Mockito.<String>any());
+    }
 
     @Test
     void testGetAllAppointmentDetailListForConsultant() {
@@ -207,6 +206,24 @@ class AppointmentApiTest {
                 Mockito.any());
         verify(appointmentDetailRepository).findTodayAppointmentCountForConsultant(Mockito.<Long>any());
         verify(consultantRepository).findByEmail(Mockito.any());
+    }
+    @Test
+    void testCompleteAppointment() {
+
+        AppointmentDetail appointmentDetail = mock(AppointmentDetail.class);
+        when(appointmentDetail.toDto(Mockito.<ModelMapper>any())).thenReturn(new AppointmentDetailDto());
+        AppointmentDetailRepository appointmentDetailRepository = mock(AppointmentDetailRepository.class);
+        when(appointmentDetailRepository.save(Mockito.<AppointmentDetail>any())).thenReturn(appointmentDetail);
+        when(appointmentDetailRepository.findById(Mockito.<Long>any())).thenReturn(Optional.of(new AppointmentDetail()));
+        ResponseEntity<AppointmentDetailDto> actualCompleteAppointmentResult = (new AppointmentApi(
+                new AppointmentServiceImpl(appointmentDetailRepository, new ModelMapper(), mock(JobSeekerRepository.class),
+                        mock(ConsultantRepository.class), mock(SendEmailService.class)))).completeAppointment(1L);
+        assertTrue(actualCompleteAppointmentResult.hasBody());
+        assertTrue(actualCompleteAppointmentResult.getHeaders().isEmpty());
+        assertEquals(200, actualCompleteAppointmentResult.getStatusCodeValue());
+        verify(appointmentDetailRepository).save(Mockito.<AppointmentDetail>any());
+        verify(appointmentDetailRepository).findById(Mockito.<Long>any());
+        verify(appointmentDetail).toDto(Mockito.<ModelMapper>any());
     }
 }
 
