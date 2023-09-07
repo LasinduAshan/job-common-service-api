@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -17,6 +18,7 @@ import com.job.common.dto.ListItemDto;
 import com.job.common.entity.AppointmentDetail;
 import com.job.common.entity.Consultant;
 import com.job.common.entity.JobSeeker;
+import com.job.common.enums.AppointmentStatus;
 import com.job.common.exception.RecordNotFoundException;
 import com.job.common.repository.AppointmentDetailRepository;
 import com.job.common.repository.ConsultantRepository;
@@ -27,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Optional;
+
+import org.junit.jupiter.api.Disabled;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -241,11 +245,10 @@ class AppointmentServiceImplTest {
         verify(appointmentDetailRepository).findById(Mockito.<Long>any());
         verify(modelMapper).map(Mockito.any(), Mockito.<Class<AppointmentDetailDto>>any());
     }
-
-    /*@Test
-    void testGetAllAppointmentDetailListForAdmin() {
+    @Test
+    void testGetAllAppointmentDetailListForAdmin1() {
         when(appointmentDetailRepository.findAll()).thenReturn(new ArrayList<>());
-        assertTrue(appointmentServiceImpl.getAllAppointmentDetailListForAdmin().isEmpty());
+        assertTrue(appointmentServiceImpl.getAllAppointmentDetailListForAdmin("ALL").isEmpty());
         verify(appointmentDetailRepository).findAll();
     }
 
@@ -254,11 +257,11 @@ class AppointmentServiceImplTest {
         ArrayList<AppointmentDetail> appointmentDetailList = new ArrayList<>();
         appointmentDetailList.add(new AppointmentDetail());
         when(appointmentDetailRepository.findAll()).thenReturn(appointmentDetailList);
-        when(modelMapper.map(Mockito.any(), Mockito.<Class<AppointmentDetailDto>>any()))
+        when(modelMapper.map(Mockito.<Object>any(), Mockito.<Class<AppointmentDetailDto>>any()))
                 .thenReturn(new AppointmentDetailDto());
-        assertEquals(1, appointmentServiceImpl.getAllAppointmentDetailListForAdmin().size());
+        assertEquals(1, appointmentServiceImpl.getAllAppointmentDetailListForAdmin("ALL").size());
         verify(appointmentDetailRepository).findAll();
-        verify(modelMapper).map(Mockito.any(), Mockito.<Class<AppointmentDetailDto>>any());
+        verify(modelMapper).map(Mockito.<Object>any(), Mockito.<Class<AppointmentDetailDto>>any());
     }
 
     @Test
@@ -267,13 +270,24 @@ class AppointmentServiceImplTest {
         appointmentDetailList.add(new AppointmentDetail());
         appointmentDetailList.add(new AppointmentDetail());
         when(appointmentDetailRepository.findAll()).thenReturn(appointmentDetailList);
-        when(modelMapper.map(Mockito.any(), Mockito.<Class<AppointmentDetailDto>>any()))
+        when(modelMapper.map(Mockito.<Object>any(), Mockito.<Class<AppointmentDetailDto>>any()))
                 .thenReturn(new AppointmentDetailDto());
-        assertEquals(2, appointmentServiceImpl.getAllAppointmentDetailListForAdmin().size());
+        assertEquals(2, appointmentServiceImpl.getAllAppointmentDetailListForAdmin("ALL").size());
         verify(appointmentDetailRepository).findAll();
-        verify(modelMapper, atLeast(1)).map(Mockito.any(), Mockito.<Class<AppointmentDetailDto>>any());
+        verify(modelMapper, atLeast(1)).map(Mockito.<Object>any(), Mockito.<Class<AppointmentDetailDto>>any());
     }
-*/
+    @Test
+    void testGetAllAppointmentDetailListForAdmin4() {
+        ArrayList<AppointmentDetail> appointmentDetailList = new ArrayList<>();
+        appointmentDetailList.add(new AppointmentDetail());
+        appointmentDetailList.add(new AppointmentDetail());
+        when(appointmentDetailRepository.findAllByAppointmentStatus(AppointmentStatus.PENDING)).thenReturn(appointmentDetailList);
+        when(modelMapper.map(Mockito.<Object>any(), Mockito.<Class<AppointmentDetailDto>>any()))
+                .thenReturn(new AppointmentDetailDto());
+        assertEquals(2, appointmentServiceImpl.getAllAppointmentDetailListForAdmin("PENDING").size());
+        verify(appointmentDetailRepository).findAllByAppointmentStatus(AppointmentStatus.PENDING);
+        verify(modelMapper, atLeast(1)).map(Mockito.<Object>any(), Mockito.<Class<AppointmentDetailDto>>any());
+    }
     @Test
     void testGetAllAppointmentDetailListForConsultant1() {
         when(consultantRepository.findByEmail(Mockito.any())).thenReturn(Optional.empty());
@@ -381,5 +395,31 @@ class AppointmentServiceImplTest {
                 () -> appointmentServiceImpl.getConsultantDashboardDetails("jane.doe@example.com"));
         verify(consultantRepository).findByEmail(Mockito.any());
     }
+
+    @Test
+    void testCompleteAppointment() {
+        when(appointmentDetailRepository.save(Mockito.<AppointmentDetail>any())).thenReturn(new AppointmentDetail());
+        when(appointmentDetailRepository.findById(Mockito.<Long>any())).thenReturn(Optional.of(new AppointmentDetail()));
+        AppointmentDetailDto appointmentDetailDto = new AppointmentDetailDto();
+        when(modelMapper.map(Mockito.<Object>any(), Mockito.<Class<AppointmentDetailDto>>any()))
+                .thenReturn(appointmentDetailDto);
+        assertSame(appointmentDetailDto, appointmentServiceImpl.completeAppointment(1L));
+        verify(appointmentDetailRepository).save(Mockito.<AppointmentDetail>any());
+        verify(appointmentDetailRepository).findById(Mockito.<Long>any());
+        verify(modelMapper).map(Mockito.<Object>any(), Mockito.<Class<AppointmentDetailDto>>any());
+    }
+
+    @Test
+    void testCompleteAppointment2() {
+        when(appointmentDetailRepository.save(Mockito.<AppointmentDetail>any())).thenReturn(new AppointmentDetail());
+        when(appointmentDetailRepository.findById(Mockito.<Long>any())).thenReturn(Optional.of(new AppointmentDetail()));
+        when(modelMapper.map(Mockito.<Object>any(), Mockito.<Class<AppointmentDetailDto>>any()))
+                .thenThrow(new RecordNotFoundException("An error occurred"));
+        assertThrows(RecordNotFoundException.class, () -> appointmentServiceImpl.completeAppointment(1L));
+        verify(appointmentDetailRepository).save(Mockito.<AppointmentDetail>any());
+        verify(appointmentDetailRepository).findById(Mockito.<Long>any());
+        verify(modelMapper).map(Mockito.<Object>any(), Mockito.<Class<AppointmentDetailDto>>any());
+    }
+
 }
 
