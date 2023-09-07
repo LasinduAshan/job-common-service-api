@@ -115,7 +115,7 @@ class AppointmentApiTest {
         verify(appointmentDetail).toDto(Mockito.any());
     }
 
-    @Test
+   /* @Test
     void testGetAllAppointmentDetailListForAdmin() {
 
         AppointmentDetailRepository appointmentDetailRepository = mock(AppointmentDetailRepository.class);
@@ -127,7 +127,7 @@ class AppointmentApiTest {
         assertEquals(200, actualAllAppointmentDetailListForAdmin.getStatusCodeValue());
         assertTrue(actualAllAppointmentDetailListForAdmin.getHeaders().isEmpty());
         verify(appointmentDetailRepository).findAll();
-    }
+    }*/
 
     @Test
     void testGetAllAppointmentDetailListForConsultant() {

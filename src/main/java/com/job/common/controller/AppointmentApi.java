@@ -35,9 +35,9 @@ public class AppointmentApi {
         return ResponseEntity.status(HttpStatus.OK).body(appointmentService.rejectAppointment(appointmentDetailDto));
     }
 
-    @GetMapping("/view-all-admin")
-    public ResponseEntity<List<AppointmentDetailDto>> getAllAppointmentDetailListForAdmin() {
-        return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getAllAppointmentDetailListForAdmin());
+    @GetMapping("/view-all-admin/{appointmentStatus}")
+    public ResponseEntity<List<AppointmentDetailDto>> getAllAppointmentDetailListForAdmin(@PathVariable String appointmentStatus) {
+        return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getAllAppointmentDetailListForAdmin(appointmentStatus));
     }
 
     @GetMapping("/view-all-consultant/{email}/{appointmentStatus}")
@@ -53,5 +53,10 @@ public class AppointmentApi {
     @GetMapping("/view-consultant-dashboard/{email}")
     public ResponseEntity<List<ListItemDto>> getConsultantDashboardDetails(@PathVariable String email) {
         return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getConsultantDashboardDetails(email));
+    }
+
+    @GetMapping("/complete-appointment/{appointmentId}")
+    public ResponseEntity<AppointmentDetailDto> completeAppointment(@PathVariable Long appointmentId) {
+        return ResponseEntity.status(HttpStatus.OK).body(appointmentService.completeAppointment(appointmentId));
     }
 }

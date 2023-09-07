@@ -15,10 +15,14 @@ public interface AppointmentService {
 
     AppointmentDetailDto rejectAppointment(AppointmentDetailDto appointmentDetailDto);
 
-    List<AppointmentDetailDto> getAllAppointmentDetailListForAdmin();
+    List<AppointmentDetailDto> getAllAppointmentDetailListForAdmin(String appointmentStatus);
 
     List<AppointmentDetailDto> getAllAppointmentDetailListForConsultant(String email, String appointmentStatus);
+
     List<ListItemDto> getAdminDashboardDetails();
+
     List<ListItemDto> getConsultantDashboardDetails(String email);
+
+    AppointmentDetailDto completeAppointment(Long appointmentId);
 
 }
