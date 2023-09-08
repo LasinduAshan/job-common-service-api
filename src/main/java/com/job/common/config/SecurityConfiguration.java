@@ -18,11 +18,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-import static com.job.common.enums.Permission.*;
-import static com.job.common.enums.Role.ADMIN;
-import static com.job.common.enums.Role.CONSULTANT;
-import static org.springframework.http.HttpMethod.*;
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -42,25 +37,6 @@ public class SecurityConfiguration {
                         "/api/v1/booking-service/create"
                 )
                 .permitAll()
-
-
-                .requestMatchers("/api/v1/consultant-service/**").hasAnyRole(ADMIN.name(), CONSULTANT.name())
-
-
-                .requestMatchers(GET, "/api/v1/consultant-service/**").hasAnyAuthority(ADMIN_READ.name(), CONSULTANT_READ.name())
-                .requestMatchers(POST, "/api/v1/consultant-service/**").hasAnyAuthority(ADMIN_CREATE.name(), CONSULTANT_CREATE.name())
-                .requestMatchers(PUT, "/api/v1/consultant-service/**").hasAnyAuthority(ADMIN_UPDATE.name(), CONSULTANT_UPDATE.name())
-                .requestMatchers(DELETE, "/api/v1/consultant-service/**").hasAnyAuthority(ADMIN_DELETE.name(), CONSULTANT_DELETE.name())
-
-
-                /* .requestMatchers("/api/v1/admin-service/**").hasRole(ADMIN.name())
-
-                 .requestMatchers(GET, "/api/v1/admin-service/**").hasAuthority(ADMIN_READ.name())
-                 .requestMatchers(POST, "/api/v1/admin-service/**").hasAuthority(ADMIN_CREATE.name())
-                 .requestMatchers(PUT, "/api/v1/admin-service/**").hasAuthority(ADMIN_UPDATE.name())
-                 .requestMatchers(DELETE, "/api/v1/admin-service/**").hasAuthority(ADMIN_DELETE.name())*/
-
-
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -72,8 +48,7 @@ public class SecurityConfiguration {
                 .logout()
                 .logoutUrl("/api/v1/auth/logout")
                 .addLogoutHandler(logoutHandler)
-                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-        ;
+                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext());
 
         return http.build();
     }
